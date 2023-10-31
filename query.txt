@@ -1,0 +1,78 @@
+
+CREATE DATABASE IF NOT EXISTS ESCUELA;
+
+CREATE USER 'escuela'@'localhost' IDENTIFIED BY 'linuxlinux';
+
+GRANT ALL PRIVILEGES ON escuela.* TO 'escuela'@'localhost';
+
+USE ESCUELA;
+
+CREATE TABLE IF NOT EXISTS rols (
+    id_rol INT PRIMARY KEY,
+    rol VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS users (
+    id_user INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    user VARCHAR(255) NOT NULL,
+    nombre VARCHAR(255),
+    dni VARCHAR(255),
+    email VARCHAR(255) NOT NULL,
+    phone VARCHAR(255),
+    street VARCHAR(255),
+    password VARCHAR(255) NOT NULL,
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES rols(id_rol)
+);
+
+CREATE TABLE IF NOT EXISTS subject (
+    id_sub INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS teachers (
+    id_teacher INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_user INT,
+    id_sub INT,
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_user) REFERENCES users(id_user),
+    FOREIGN KEY (id_sub) REFERENCES subject(id_sub),
+    FOREIGN KEY (id_rol) REFERENCES rols(id_rol)
+);
+
+CREATE TABLE IF NOT EXISTS students (
+    id_student INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_rol INT NOT NULL,
+    FOREIGN KEY (id_rol) REFERENCES rols(id_rol)
+);
+
+CREATE TABLE IF NOT EXISTS grades (
+    id_grade INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    grade INTEGER NOT NULL DEFAULT 0,
+    id_student INT,
+    id_teacher INT,
+    FOREIGN KEY (id_student) REFERENCES students(id_student),
+    FOREIGN KEY (id_teacher) REFERENCES teachers(id_teacher)
+);
+
+CREATE TABLE IF NOT EXISTS registrations (
+    id_registration INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    id_student INT NOT NULL,
+    id_subject INT NOT NULL,
+    registration_date DATE NOT NULL,
+    FOREIGN KEY (id_student) REFERENCES students(id_student),
+    FOREIGN KEY (id_subject) REFERENCES subject(id_sub)
+);
+
+
+INSERT INTO rols(id_rol,rol) VALUES(1,"profesor");
+INSERT INTO rols(id_rol,rol) VALUES(2,"alumno");
+
+DELETE from rols WHERE id_rol=0;
+
+SELECT * FROM rols;
+
+ALTER TABLE users
+ADD CONSTRAINT uq_user_email UNIQUE (user, email);
+
